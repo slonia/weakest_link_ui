@@ -16,7 +16,9 @@ export class GameService {
     return this.http.get("http://localhost:3000/");
   }
 
-  create(payload: any) {
-    return this.http.post("http://localhost:3000/create", payload);
+  create(payload: any = {}) {
+    let id = Math.random().toString(36).substr(2, 9);
+    let payloadWithId = {...payload, id: id};
+    return this.http.post("http://localhost:3000/create", payloadWithId);
   }
 }
