@@ -1,6 +1,6 @@
 <p>game-manager works!</p>
 <p>Existing games</p>
 <ul>
-  <li *ngFor="let game of games">{{game}}</li>
+  <li *ngFor="let game of games">{{game}} <a [routerLink]="['game', game]">join</a></li>
 </ul>
 <button (click)="create()">Create</button>

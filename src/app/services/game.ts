@@ -21,4 +21,8 @@ export class GameService {
     let payloadWithId = {...payload, id: id};
     return this.http.post("http://localhost:3000/create", payloadWithId);
   }
+
+  join(id: string) {
+    return this.http.post("http://localhost:3000/join", {id: id});
+  }
 }

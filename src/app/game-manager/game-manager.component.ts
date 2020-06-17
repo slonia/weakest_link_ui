@@ -22,7 +22,7 @@ export class GameManagerComponent implements OnInit {
       let a =  JSON.stringify(
         {
           "command": "subscribe",
-          "identifier":  JSON.stringify({"channel": "GameChannel"})
+          "identifier":  JSON.stringify({"channel": "GamesChannel"})
         })
       this.ws.send(a)
     }
@@ -30,7 +30,7 @@ export class GameManagerComponent implements OnInit {
       let json = JSON.parse(e.data);
       if (json["identifier"]) {
         json['identifier'] = JSON.parse(json['identifier'])
-        if (json['identifier']['channel'] === 'GameChannel' && json['message']) {
+        if (json['identifier']['channel'] === 'GamesChannel' && json['message']) {
           console.log('!!!', json)
           this.games = json['message']['games']
         }
@@ -40,7 +40,9 @@ export class GameManagerComponent implements OnInit {
   }
 
   create(): void {
-    this.gameService.create().subscribe();
+    this.gameService.create().subscribe((data: any) => {
+      console.log(data)
+    });
   }
 
 }
