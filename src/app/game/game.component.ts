@@ -17,14 +17,12 @@ export class GameComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       this.gameId = params.id;
-      setTimeout(() => {
-        this.wss.subscribeTo('GameChannel', {'id': this.gameId}).asObservable().subscribe((event: any) => {
-          if (event) {
-            this.players = event.players;
-          }
-        })
+      this.wss.subscribeTo('GameChannel', {'id': this.gameId}).asObservable().subscribe((event: any) => {
+        if (event) {
+          this.players = event.players;
+        }
+      })
 
-      }, 1500);
 
       this.gameService.join(this.gameId).subscribe()
     });

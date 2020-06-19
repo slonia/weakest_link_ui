@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject }    from 'rxjs';
+import { Subject, Observable }    from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +23,12 @@ export class WebSocketsService {
       "command": "subscribe",
       "identifier": JSON.stringify({...{"channel": channel}, ...params})
     };
-    this.ws.send(JSON.stringify(subscription));
+    let interval = setInterval(() => {
+      if (this.ws.readyState === this.ws.OPEN) {
+        this.ws.send(JSON.stringify(subscription));
+        clearInterval(interval)
+      }
+    }, 500);
     this.channels[channel] = new Subject<any>();
     return this.channels[channel];
   }

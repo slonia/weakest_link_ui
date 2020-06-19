@@ -17,14 +17,12 @@ export class GameManagerComponent implements OnInit {
     // this.gameService.getAll().subscribe((data: any) => {
     //   this.games = data.games;
     // })
-    setTimeout(() => {
-      this.wss.subscribeTo('GamesChannel').asObservable().subscribe((event: any) => {
-        if (event) {
-          this.games = event.games
-        }
-      })
+    this.wss.subscribeTo('GamesChannel').asObservable().subscribe((event: any) => {
+      if (event) {
+        this.games = event.games
+      }
+    })
 
-    }, 2000);
   }
 
   create(): void {
