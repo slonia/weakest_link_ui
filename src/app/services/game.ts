@@ -18,8 +18,8 @@ export class GameService {
 
   create(payload: any = {}) {
     let id = Math.random().toString(36).substr(2, 9);
-    let payloadWithId = {...payload, id: id};
-    return this.http.post("http://localhost:3000/create", payloadWithId);
+    let payloadWithId = {"game": {...payload, uuid: id}};
+    return this.http.post("http://localhost:3000/games", payloadWithId);
   }
 
   join(id: string) {

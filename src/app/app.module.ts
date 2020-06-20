@@ -8,6 +8,7 @@ import { GameManagerComponent } from './game-manager/game-manager.component';
 import { GameComponent } from './game/game.component';
 import { WebSocketsService } from './services/web-sockets.service';
 import { GameService } from './services/game';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { GameService } from './services/game';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    NgbModule
   ],
   providers: [GameService, WebSocketsService],
   bootstrap: [AppComponent]
