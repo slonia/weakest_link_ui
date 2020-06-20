@@ -1,14 +1,23 @@
-<div class="row">
-  <div class="col-sm">
-    <h1>Games
-      <button class="float-right btn btn-primary" (click)="create()">Create</button>
-    </h1>
+<ng-container *ngIf="!playerCreated">
+  <div class="form-group">
+    <label for="player">Your name</label>
+    <input class="form-control" id="player" [(ngModel)]="player" />
   </div>
-</div>
-<div class="row">
-  <div class="col-sm">
-    <ul class="list-group">
-      <li class="list-group-item" *ngFor="let game of games">{{game}} <a class="btn btn-success btn-sm float-right" [routerLink]="['game', game]">join</a></li>
-    </ul>
+  <button type="submit" class="btn btn-primary" (click)="savePlayer()">Submit</button>
+</ng-container>
+<ng-container *ngIf="playerCreated">
+  <div class="row">
+    <div class="col-sm">
+      <h1>Games ({{player}})
+        <button class="float-right btn btn-primary" (click)="create()">Create</button>
+      </h1>
+    </div>
   </div>
-</div>
+  <div class="row">
+    <div class="col-sm">
+      <ul class="list-group">
+        <li class="list-group-item" *ngFor="let game of games">{{game}} <a class="btn btn-success btn-sm float-right" [routerLink]="['game', game]">join</a></li>
+      </ul>
+    </div>
+  </div>
+</ng-container>
