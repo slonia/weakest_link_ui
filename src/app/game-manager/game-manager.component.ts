@@ -36,7 +36,7 @@ export class GameManagerComponent implements OnInit {
   }
 
   create(): void {
-    this.gameService.create().subscribe((data: any) => {
+    this.gameService.create({name: this.player}).subscribe((data: any) => {
       console.log(data)
     });
   }

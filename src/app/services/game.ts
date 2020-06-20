@@ -22,7 +22,7 @@ export class GameService {
     return this.http.post("http://localhost:3000/games", payloadWithId);
   }
 
-  join(id: string) {
-    return this.http.post("http://localhost:3000/join", {id: id});
+  join(id: string, name: string) {
+    return this.http.post("http://localhost:3000/games/" + id + "/join", {name: name});
   }
 }
