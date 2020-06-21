@@ -14,7 +14,7 @@ export class GameManagerComponent implements OnInit {
   ws: WebSocket;
   player: string;
   playerCreated = false;
-
+  roundTime = 150;
   constructor(
     private gameService: GameService,
     private wss: WebSocketsService,
@@ -44,6 +44,16 @@ export class GameManagerComponent implements OnInit {
   savePlayer(): void {
     this.cookieService.set('user', this.player);
     this.playerCreated = true;
+  }
+
+  setRoundTime(n: number): number{
+    if (n >= 8) {
+      return 150;
+    } else if (n > 2) {
+      return 90 + 10 * (n-2);
+    } else {
+      return 90;
+    }
   }
 
 }

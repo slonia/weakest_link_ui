@@ -13,6 +13,9 @@ import { CookieService } from 'ngx-cookie-service';
 export class GameComponent implements OnInit {
   gameId: string = '';
   players: string[] = [];
+  owner: string;
+  currentUser: string;
+  isOwner: boolean = false;
   constructor(
     private route: ActivatedRoute,
     private gameService: GameService,
@@ -30,8 +33,16 @@ export class GameComponent implements OnInit {
         }
       })
 
-      let user = this.cookieService.get('user');
-      this.gameService.join(this.gameId, user).subscribe()
+      this.currentUser = this.cookieService.get('user');
+      this.gameService.join(this.gameId, this.currentUser).subscribe((data: any) => {
+        data.players.forEach((player) => {
+          if (player.role === 'creator') {
+            this.owner = player.name;
+            this.isOwner = this.owner === this.currentUser;
+          }
+        })
+
+      })
     });
   }
 
