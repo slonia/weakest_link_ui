@@ -26,10 +26,9 @@ export class GameComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       this.gameId = params.id;
-      this.wss.subscribeTo('GameChannel', {'id': this.gameId}).asObservable().subscribe((event: any) => {
+      this.wss.subscribeTo('GameChannel', {id: this.gameId}).asObservable().subscribe((event) => {
         if (event) {
-          // debugger
-          this.players = event.players;
+          this.processMessage(event)
         }
       })
 
@@ -44,6 +43,16 @@ export class GameComponent implements OnInit {
 
       })
     });
+  }
+
+  private processMessage(event: any) {
+    debugger
+    switch(event.event) {
+      case "player_joined": {
+        this.players = event.data.players;
+        break;
+      }
+    }
   }
 
 }

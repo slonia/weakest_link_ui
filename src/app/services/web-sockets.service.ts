@@ -18,19 +18,16 @@ export class WebSocketsService {
     };
   }
 
-  subscribeTo(channel: string, params = {}): Subject<any> {
-    let subscription = {
-      "command": "subscribe",
-      "identifier": JSON.stringify({...{"channel": channel}, ...params})
-    };
-    let interval = setInterval(() => {
-      if (this.ws.readyState === this.ws.OPEN) {
-        this.ws.send(JSON.stringify(subscription));
-        clearInterval(interval)
-      }
-    }, 500);
+  subscribeTo(channel: string, payload = {}): Subject<any> {
+    let identifier = JSON.stringify({"channel": channel, ...payload});
+    this.send("subscribe", identifier);
     this.channels[channel] = new Subject<any>();
     return this.channels[channel];
+  }
+
+  sendData(channel: string, payload = {}, data = {}) {
+    let identifier = JSON.stringify({"channel": channel, ...payload});
+    this.send("subscribe", identifier, data);
   }
 
   private setOnMessage() {
@@ -44,5 +41,20 @@ export class WebSocketsService {
         }
       }
     }
+  }
+
+  private send(command: string, identifier: any, data = {}) {
+    let subscription = {
+      "command": command,
+      "identifier": identifier,
+      "data": data
+    };
+    let interval = setInterval(() => {
+      if (this.ws.readyState === this.ws.OPEN) {
+        this.ws.send(JSON.stringify(subscription));
+        clearInterval(interval)
+      }
+    }, 500);
+
   }
 }
