@@ -27,7 +27,7 @@ export class WebSocketsService {
 
   sendData(channel: string, payload = {}, data = {}) {
     let identifier = JSON.stringify({"channel": channel, ...payload});
-    this.send("subscribe", identifier, data);
+    this.send("message", identifier, JSON.stringify(data));
   }
 
   private setOnMessage() {

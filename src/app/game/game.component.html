@@ -1,14 +1,19 @@
 <h1>Game: {{gameId}} by {{owner}}</h1>
 <div class="row">
   <div class="col-sm">
-    <button *ngIf="isOwner" class="btn btn-primary">Start</button>
+    <button *ngIf="isOwner" class="btn btn-primary" (click)="start()">Start</button>
   </div>
 </div>
 <div class="row">
   <div class="col-sm">
-    <p>Players</p>
+    <p>Players </p>
     <ul class="list-group">
-      <li *ngFor="let player of players" class="list-group-item" [ngClass]="{'list-group-item-success': player === currentUser}">{{player}}</li>
+      <li *ngFor="let player of players; index as i" class="list-group-item" [ngClass]="{'list-group-item-success': i === answeringId}">{{player}}</li>
     </ul>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm">
+    <h2>Time left: {{timer}}</h2>
   </div>
 </div>
