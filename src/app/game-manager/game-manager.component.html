@@ -9,7 +9,10 @@
   <div class="row">
     <div class="col-sm">
       <h1>Games ({{player}})
-        <button class="float-right btn btn-primary" (click)="create()">Create</button>
+        <div class="float-right btn-group" role="group">
+          <button class="btn btn-success" (click)="create()">Create</button>
+          <button class="btn btn-primary" [routerLink]="['questions-editor']"> Questions editor</button>
+        </div>
       </h1>
     </div>
   </div>

@@ -11,12 +11,14 @@ import { GameComponent } from './game/game.component';
 import { WebSocketsService } from './services/web-sockets.service';
 import { GameService } from './services/game';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { QuestionsEditorComponent } from './questions-editor/questions-editor.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     GameManagerComponent,
-    GameComponent
+    GameComponent,
+    QuestionsEditorComponent
   ],
   imports: [
     BrowserModule,
