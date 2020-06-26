@@ -12,6 +12,7 @@ import { WebSocketsService } from './services/web-sockets.service';
 import { GameService } from './services/game';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { QuestionsEditorComponent } from './questions-editor/questions-editor.component';
+import { QuestionService } from './services/question'
 
 @NgModule({
   declarations: [
@@ -27,7 +28,7 @@ import { QuestionsEditorComponent } from './questions-editor/questions-editor.co
     NgbModule,
     FormsModule
   ],
-  providers: [CookieService, GameService, WebSocketsService],
+  providers: [CookieService, GameService, WebSocketsService, QuestionService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

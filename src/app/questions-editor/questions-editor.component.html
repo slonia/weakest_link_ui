@@ -1,1 +1,18 @@
-<p>questions-editor works!</p>
+<h1>Question editor</h1>
+<div class="row">
+  <div class="col-sm">
+    <div class="form-group">
+      <label for="file">File:</label>
+      <input class="form-control" type="file" id="file" (change)="onFileUpload($event)" />
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm">
+    <ul class="list-group">
+      <li class="list-group-item" *ngFor="let question of questions">
+        {{question.text}} - {{question.answer}}
+      </li>
+    </ul>
+  </div>
+</div>
