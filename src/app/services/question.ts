@@ -17,7 +17,8 @@ export class Question implements IQuestion {
 export class QuestionService {
   constructor(private http: HttpClient) {}
 
-  createFromFile() {
+  saveAll(questions: IQuestion[]) {
+    return this.http.post("http://localhost:3000/questions", {"questions": questions});
 
   }
 }

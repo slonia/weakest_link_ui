@@ -1,17 +1,31 @@
 <h1>Question editor</h1>
 <div class="row">
-  <div class="col-sm">
+  <div class="col-sm-8">
     <div class="form-group">
       <label for="file">File:</label>
       <input class="form-control" type="file" id="file" (change)="onFileUpload($event)" />
     </div>
   </div>
+  <div class="col-sm-4">
+    <button type="submit" class="btn btn-success" (click)="saveAll()">Save All</button>
+  </div>
 </div>
 <div class="row">
   <div class="col-sm">
     <ul class="list-group">
-      <li class="list-group-item" *ngFor="let question of questions">
-        {{question.text}} - {{question.answer}}
+      <li class="list-group-item" *ngFor="let question of questions; index as i">
+        <div class="form-group">
+          <label for="text_{{i}}">Text:</label>
+          <textarea class="form-control" id="text_{{i}}" [(ngModel)]="question.text"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="answer_{{i}}">Answer:</label>
+          <input class="form-control" id="answer_{{i}}" [(ngModel)]="question.answer"/>
+        </div>
+        <div class="form-group">
+          <input type="checkbox" id="shared_{{i}}" [checked]="question.shared" (change)="question.shared = !question.shared">
+          <label for="shared_{{i}}">Shared</label>
+        </div>
       </li>
     </ul>
   </div>

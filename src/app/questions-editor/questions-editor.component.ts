@@ -30,7 +30,13 @@ export class QuestionsEditorComponent implements OnInit {
     let rowData;
     for (let row of data) {
       rowData = row.split(";")
-      this.questions.push(new Question(rowData[0], rowData[1]));
+      if ((rowData.length > 0) && (rowData[0] !== "")) {
+        this.questions.push(new Question(rowData[0], rowData[1]));
+      }
     }
+  }
+
+  saveAll() {
+    this.questionService.saveAll(this.questions).subscribe();
   }
 }
