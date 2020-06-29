@@ -19,6 +19,10 @@ export class GameComponent implements OnInit {
   timer: number;
   timerInterval: any;
   answeringId: number = 0;
+  money = [1000, 2000, 5000, 10000, 15000, 20000, 30000, 40000];
+  totalMoney = 0;
+  moneyIndex = 0;
+  isAnswering: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -54,6 +58,14 @@ export class GameComponent implements OnInit {
     this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "start"});
   }
 
+  bank() {
+    this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "bank"});
+  }
+
+  pass() {
+    this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "pass"});
+  }
+
   // private
 
   private processMessage(event: any) {
@@ -67,6 +79,16 @@ export class GameComponent implements OnInit {
         this.timer = 200;
         this.setNextPlayer();
         this.runTimer();
+        break;
+      }
+      case "bank": {
+        this.totalMoney += this.money[this.moneyIndex];
+        this.moneyIndex = 0;
+        break;
+      }
+      case "pass": {
+        this.moneyIndex = 0;
+        this.setNextPlayer();
         break;
       }
     }
@@ -91,6 +113,7 @@ export class GameComponent implements OnInit {
     if (this.answeringId >= this.players.length) {
       this.answeringId = 0;
     }
+    this.isAnswering = this.players[this.answeringId] === this.currentUser;
   }
 
 }
