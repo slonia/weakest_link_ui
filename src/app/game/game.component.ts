@@ -3,11 +3,12 @@ import {ActivatedRoute} from "@angular/router";
 import { Game, GameService } from '../services/game';
 import { WebSocketsService } from '../services/web-sockets.service';
 import { CookieService } from 'ngx-cookie-service';
+import { TimerService } from '../services/timer.service';
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.scss'],
+  styleUrls: ['./game.component.scss']
 })
 
 export class GameComponent implements OnInit {
@@ -16,20 +17,29 @@ export class GameComponent implements OnInit {
   owner: string;
   currentUser: string;
   isOwner: boolean = false;
-  timer: number;
-  timerInterval: any;
+  timer: TimerService;
+  timeLeft: number;
   answeringId: number = 0;
   money = [1000, 2000, 5000, 10000, 15000, 20000, 30000, 40000];
   totalMoney = 0;
   moneyIndex = 0;
   isAnswering: boolean = false;
+  answerReceived: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private gameService: GameService,
     private wss: WebSocketsService,
     private cookieService: CookieService
-  ) { }
+  ) {
+    this.timer = new TimerService(200);
+    this.timer.tick.subscribe((num: number) => {
+      this.timeLeft = num;
+      if (num % 10 === 0) {
+        this.setNextPlayer();
+      }
+    })
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
@@ -66,6 +76,18 @@ export class GameComponent implements OnInit {
     this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "pass"});
   }
 
+  wrong() {
+
+  }
+
+  correct() {
+
+  }
+
+  pause() {
+    this.timer.pause();
+  }
+
   // private
 
   private processMessage(event: any) {
@@ -76,9 +98,7 @@ export class GameComponent implements OnInit {
         break;
       }
       case "start": {
-        this.timer = 200;
-        this.setNextPlayer();
-        this.runTimer();
+        this.timer.start();
         break;
       }
       case "bank": {
@@ -91,20 +111,6 @@ export class GameComponent implements OnInit {
         this.setNextPlayer();
         break;
       }
-    }
-  }
-
-  private runTimer() {
-    if (!this.timerInterval) {
-      this.timerInterval = setInterval(() => {
-        this.timer -= 1;
-        if (this.timer % 10 === 0) {
-          this.setNextPlayer();
-        }
-        if (this.timer < 1) {
-          clearInterval(this.timerInterval);
-        }
-      }, 1000);
     }
   }
 
