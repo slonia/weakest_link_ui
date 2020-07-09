@@ -18,13 +18,14 @@ export class GameComponent implements OnInit {
   currentUser: string;
   isOwner: boolean = false;
   timer: TimerService;
-  timeLeft: number;
-  answeringId: number = 0;
+  bankTimer: TimerService;
+  answeringId: number;
   money = [1000, 2000, 5000, 10000, 15000, 20000, 30000, 40000];
   totalMoney = 0;
   moneyIndex = 0;
   isAnswering: boolean = false;
   answerReceived: boolean = false;
+  canPutInBank: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,12 +34,16 @@ export class GameComponent implements OnInit {
     private cookieService: CookieService
   ) {
     this.timer = new TimerService(200);
-    this.timer.tick.subscribe((num: number) => {
-      this.timeLeft = num;
-      if (num % 10 === 0) {
-        this.setNextPlayer();
-      }
-    })
+    this.timer.tick.subscribe(this.onTick.bind(this));
+    this.bankTimer = new TimerService(10);
+    this.bankTimer.started.subscribe(() => {
+      this.timer.pause();
+      this.canPutInBank = true;
+    });
+    this.bankTimer.paused.subscribe(() => {
+      this.canPutInBank = false;
+      this.timer.start();
+    });
   }
 
   ngOnInit(): void {
@@ -64,15 +69,15 @@ export class GameComponent implements OnInit {
     });
   }
 
-  start() {
+  sendStart() {
     this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "start"});
   }
 
-  bank() {
+  sendBank() {
     this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "bank"});
   }
 
-  pass() {
+  sendPass() {
     this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "pass"});
   }
 
@@ -98,28 +103,44 @@ export class GameComponent implements OnInit {
         break;
       }
       case "start": {
-        this.timer.start();
+        this.startNextRound();
         break;
       }
       case "bank": {
-        this.totalMoney += this.money[this.moneyIndex];
-        this.moneyIndex = 0;
+        this.onBank();
         break;
       }
       case "pass": {
         this.moneyIndex = 0;
-        this.setNextPlayer();
+        this.startNextRound();
         break;
       }
     }
   }
 
-  private setNextPlayer() {
-    this.answeringId += 1;
+  onBank() {
+    this.totalMoney += this.money[this.moneyIndex];
+    this.moneyIndex = 0;
+    this.bankTimer.pause();
+  }
+
+  private startNextRound() {
+    if (this.answeringId) {
+      this.answeringId += 1;
+    } else {
+      this.answeringId = 0;
+    }
     if (this.answeringId >= this.players.length) {
       this.answeringId = 0;
     }
     this.isAnswering = this.players[this.answeringId] === this.currentUser;
+    this.bankTimer.restart();
   }
 
+
+  private onTick(num: number) {
+    if (num % 10 === 0) {
+      this.startNextRound();
+    }
+  }
 }
