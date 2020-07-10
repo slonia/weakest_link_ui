@@ -1,4 +1,10 @@
 <h1>Game: {{gameId}} by {{owner}}</h1>
+<div class="row" *ngIf="!canPutInBank || isOwner">
+  <div class="col-sm">
+    <div>{{currentQuestion}}</div>
+    <div *ngIf="isOwner">{{currentAnswer}}</div>
+  </div>
+</div>
 <div class="row">
   <div class="col-sm">
     <div class="btn-group" role="group" *ngIf="isOwner">

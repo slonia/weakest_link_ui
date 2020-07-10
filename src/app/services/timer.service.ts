@@ -17,7 +17,7 @@ export class TimerService {
       if (this.running) {
         this.time -= 1;
         if (this.time < 1) {
-          this.running = false;
+          this.pause();
           this.stopped.emit();
         } else {
           this.tick.emit(this.time);

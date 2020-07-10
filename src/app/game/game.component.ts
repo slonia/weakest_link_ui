@@ -12,6 +12,7 @@ import { TimerService } from '../services/timer.service';
 })
 
 export class GameComponent implements OnInit {
+  // attributes
   gameId: string = '';
   players: string[] = [];
   owner: string;
@@ -26,24 +27,39 @@ export class GameComponent implements OnInit {
   isAnswering: boolean = false;
   answerReceived: boolean = false;
   canPutInBank: boolean = false;
+  currentQuestion: string;
+  currentAnswer: string;
 
+  // service functions
+  onTick = (num: number) => {
+    if (num % 10 === 0) {
+      this.startNextRound();
+    }
+  }
+
+  onBankStart = () => {
+    this.timer.pause();
+    this.canPutInBank = true;
+  }
+
+  onBankPause = () => {
+    this.canPutInBank = false;
+    this.askForQuestion();
+
+  }
+
+  // instance methods
   constructor(
     private route: ActivatedRoute,
     private gameService: GameService,
     private wss: WebSocketsService,
     private cookieService: CookieService
   ) {
-    this.timer = new TimerService(200);
-    this.timer.tick.subscribe(this.onTick.bind(this));
+    this.timer = new TimerService(this.getRoundTime());
+    this.timer.tick.subscribe(this.onTick);
     this.bankTimer = new TimerService(10);
-    this.bankTimer.started.subscribe(() => {
-      this.timer.pause();
-      this.canPutInBank = true;
-    });
-    this.bankTimer.paused.subscribe(() => {
-      this.canPutInBank = false;
-      this.timer.start();
-    });
+    this.bankTimer.started.subscribe(this.onBankStart);
+    this.bankTimer.paused.subscribe(this.onBankPause);
   }
 
   ngOnInit(): void {
@@ -69,17 +85,6 @@ export class GameComponent implements OnInit {
     });
   }
 
-  sendStart() {
-    this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "start"});
-  }
-
-  sendBank() {
-    this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "bank"});
-  }
-
-  sendPass() {
-    this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "pass"});
-  }
 
   wrong() {
 
@@ -115,6 +120,10 @@ export class GameComponent implements OnInit {
         this.startNextRound();
         break;
       }
+      case "question": {
+        this.onQuestion(event);
+        break;
+      }
     }
   }
 
@@ -122,6 +131,24 @@ export class GameComponent implements OnInit {
     this.totalMoney += this.money[this.moneyIndex];
     this.moneyIndex = 0;
     this.bankTimer.pause();
+  }
+
+  sendStart() {
+    this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "start"});
+  }
+
+  sendBank() {
+    this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "bank"});
+  }
+
+  sendPass() {
+    this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "pass"});
+  }
+
+  private onQuestion(event: any) {
+    this.currentQuestion = event.question;
+    this.currentAnswer = event.answer;
+    this.timer.start();
   }
 
   private startNextRound() {
@@ -137,10 +164,18 @@ export class GameComponent implements OnInit {
     this.bankTimer.restart();
   }
 
-
-  private onTick(num: number) {
-    if (num % 10 === 0) {
-      this.startNextRound();
+  private getRoundTime(): number{
+    let n = this.players.length - 1;
+    if (n >= 8) {
+      return 150;
+    } else if (n > 2) {
+      return 90 + 10 * (n-2);
+    } else {
+      return 90;
     }
+  }
+
+  private askForQuestion() {
+    this.wss.sendData('GameChannel', {id: this.gameId}, {'event': 'question'})
   }
 }

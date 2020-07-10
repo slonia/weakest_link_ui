@@ -46,14 +46,4 @@ export class GameManagerComponent implements OnInit {
     this.playerCreated = true;
   }
 
-  setRoundTime(n: number): number{
-    if (n >= 8) {
-      return 150;
-    } else if (n > 2) {
-      return 90 + 10 * (n-2);
-    } else {
-      return 90;
-    }
-  }
-
 }
