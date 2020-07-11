@@ -1,4 +1,4 @@
-<h1>Game: {{gameId}} by {{owner}}</h1>
+<h1>Game: {{gameId}} by {{owner}}, Round: {{currentRound}}</h1>
 <div class="row" *ngIf="!canPutInBank || isOwner">
   <div class="col-sm">
     <div>{{currentQuestion}}</div>
@@ -16,6 +16,7 @@
     <div class="btn-group" role="group" *ngIf="isAnswering">
       <button class="btn btn-warning" (click)="sendBank()" *ngIf="canPutInBank">Bank</button>
       <button class="btn btn-danger" (click)="sendPass()">Pass</button>
+      <button class="btn btn-success" (click)="sendAnswer()">Answer</button>
     </div>
   </div>
 </div>

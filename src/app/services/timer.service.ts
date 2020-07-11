@@ -17,8 +17,7 @@ export class TimerService {
       if (this.running) {
         this.time -= 1;
         if (this.time < 1) {
-          this.pause();
-          this.stopped.emit();
+          this.stop();
         } else {
           this.tick.emit(this.time);
         }
@@ -41,4 +40,9 @@ export class TimerService {
     this.paused.emit();
   }
 
+  stop() {
+    this.time = 0;
+    this.running = false;
+    this.stopped.emit();
+  }
 }

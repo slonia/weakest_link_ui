@@ -29,13 +29,7 @@ export class GameComponent implements OnInit {
   canPutInBank: boolean = false;
   currentQuestion: string;
   currentAnswer: string;
-
-  // service functions
-  onTick = (num: number) => {
-    if (num % 10 === 0) {
-      this.startNextRound();
-    }
-  }
+  currentRound: number = 0;
 
   onBankStart = () => {
     this.timer.pause();
@@ -44,8 +38,10 @@ export class GameComponent implements OnInit {
 
   onBankPause = () => {
     this.canPutInBank = false;
-    this.askForQuestion();
+  }
 
+  onBankEnd = () => {
+    this.askForQuestion();
   }
 
   // instance methods
@@ -56,10 +52,10 @@ export class GameComponent implements OnInit {
     private cookieService: CookieService
   ) {
     this.timer = new TimerService(this.getRoundTime());
-    this.timer.tick.subscribe(this.onTick);
     this.bankTimer = new TimerService(10);
     this.bankTimer.started.subscribe(this.onBankStart);
     this.bankTimer.paused.subscribe(this.onBankPause);
+    this.bankTimer.stopped.subscribe(this.onBankEnd);
   }
 
   ngOnInit(): void {
@@ -87,11 +83,11 @@ export class GameComponent implements OnInit {
 
 
   wrong() {
-
+    this.wss.sendData('GameChannel', {id: this.gameId}, {'event': 'wrong'})
   }
 
   correct() {
-
+    this.wss.sendData('GameChannel', {id: this.gameId}, {'event': 'correct'})
   }
 
   pause() {
@@ -101,14 +97,15 @@ export class GameComponent implements OnInit {
   // private
 
   private processMessage(event: any) {
-    console.log("aaa", event)
+    console.log(event.event, "received")
     switch(event.event) {
       case "player_joined": {
         this.players = event.data.players;
         break;
       }
       case "start": {
-        this.startNextRound();
+        this.askForQuestion();
+        this.startNextTurn(false);
         break;
       }
       case "bank": {
@@ -117,11 +114,29 @@ export class GameComponent implements OnInit {
       }
       case "pass": {
         this.moneyIndex = 0;
-        this.startNextRound();
+        this.startNextTurn();
         break;
       }
       case "question": {
         this.onQuestion(event);
+        break;
+      }
+      case "answer": {
+        this.answerReceived = true;
+        this.timer.pause();
+        break
+      }
+      case "wrong": {
+        this.moneyIndex = 0
+        this.startNextTurn();
+        break;
+      }
+      case "correct": {
+        this.moneyIndex += 1;
+        if (this.moneyIndex > this.money.length - 1) {
+          this.moneyIndex = 0;
+        }
+        this.startNextTurn();
         break;
       }
     }
@@ -130,7 +145,7 @@ export class GameComponent implements OnInit {
   onBank() {
     this.totalMoney += this.money[this.moneyIndex];
     this.moneyIndex = 0;
-    this.bankTimer.pause();
+    this.bankTimer.stop();
   }
 
   sendStart() {
@@ -145,23 +160,27 @@ export class GameComponent implements OnInit {
     this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "pass"});
   }
 
+  sendAnswer() {
+    this.wss.sendData('GameChannel', {id: this.gameId}, {"event": "answer"});
+  }
+
   private onQuestion(event: any) {
     this.currentQuestion = event.question;
     this.currentAnswer = event.answer;
     this.timer.start();
   }
 
-  private startNextRound() {
-    if (this.answeringId) {
-      this.answeringId += 1;
-    } else {
+  private startNextTurn(bank = true) {
+    if (typeof this.answeringId === 'undefined') {
       this.answeringId = 0;
+    } else {
+      this.answeringId += 1;
     }
     if (this.answeringId >= this.players.length) {
       this.answeringId = 0;
     }
     this.isAnswering = this.players[this.answeringId] === this.currentUser;
-    this.bankTimer.restart();
+    if (bank) this.bankTimer.restart();
   }
 
   private getRoundTime(): number{
